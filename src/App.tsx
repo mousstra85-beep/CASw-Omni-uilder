@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { AdminSettings, Project, UserAccount } from "./types";
+import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import {
   getActiveProjectId,
   getAdminSettings,
@@ -23,7 +24,8 @@ import { ProjectWorkspace } from "./components/ProjectWorkspace";
 import { ProjectSettingsModal } from "./components/ProjectSettingsModal";
 import { Sparkles, Plus, Layers, ShieldCheck, Heart } from "lucide-react";
 
-export default function App() {
+function AppStudio() {
+  const { isDark } = useTheme();
   const [currentUser, setUser] = useState<UserAccount>(getCurrentUser());
   const [adminSettings, setSettings] = useState<AdminSettings>(getAdminSettings());
   const [projects, setProjectsList] = useState<Project[]>(loadProjects());
@@ -107,7 +109,11 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col antialiased selection:bg-blue-600 selection:text-white">
+    <div
+      className={`min-h-screen flex flex-col antialiased transition-colors duration-200 selection:bg-blue-600 selection:text-white ${
+        isDark ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900"
+      }`}
+    >
       {/* Top Navigation */}
       <Navbar
         currentUser={currentUser}
@@ -142,12 +148,18 @@ export default function App() {
             onOpenSettings={() => setIsSettingsOpen(true)}
           />
         ) : (
-          <div className="max-w-md mx-auto my-20 p-8 bg-slate-900 border border-slate-800 rounded-3xl text-center space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-500/40 text-blue-400 flex items-center justify-center mx-auto">
+          <div
+            className={`max-w-md mx-auto my-20 p-8 rounded-3xl text-center space-y-4 border ${
+              isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200 shadow-xl"
+            }`}
+          >
+            <div className="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-500/40 text-blue-500 flex items-center justify-center mx-auto">
               <Layers className="w-6 h-6" />
             </div>
-            <h2 className="text-lg font-bold text-white">Aucun projet sélectionné</h2>
-            <p className="text-xs text-slate-400">
+            <h2 className={`text-lg font-bold ${isDark ? "text-white" : "text-slate-900"}`}>
+              Aucun projet sélectionné
+            </h2>
+            <p className={`text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
               Créez votre première application sans aucune compétence grâce aux 3 IA coordonnées.
             </p>
             <button
@@ -162,14 +174,22 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800/80 bg-slate-900/50 py-4 px-6 text-center text-xs text-slate-400 flex flex-wrap items-center justify-between gap-2">
+      <footer
+        className={`border-t py-4 px-6 text-center text-xs flex flex-wrap items-center justify-between gap-2 transition-colors ${
+          isDark
+            ? "border-slate-800/80 bg-slate-900/50 text-slate-400"
+            : "border-slate-200 bg-white text-slate-600 shadow-inner"
+        }`}
+      >
         <div className="flex items-center gap-2">
-          <span className="font-bold text-slate-300">AfriBuilder AI Studio</span>
+          <span className={`font-bold ${isDark ? "text-slate-300" : "text-slate-800"}`}>AfriBuilder AI Studio</span>
           <span>• Plateforme de création d'applications et sites web no-code</span>
         </div>
-        <div className="flex items-center gap-4 text-[11px] text-slate-500">
+        <div className={`flex items-center gap-4 text-[11px] ${isDark ? "text-slate-500" : "text-slate-400"}`}>
           <span>Orange Money • Wave • MTN MoMo • Moov</span>
-          <span>Sécurisé 100%</span>
+          <span className="flex items-center gap-1 font-medium text-emerald-500">
+            <ShieldCheck className="w-3.5 h-3.5" /> Sécurisé 100%
+          </span>
         </div>
       </footer>
 
@@ -246,3 +266,12 @@ export default function App() {
     </div>
   );
 }
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppStudio />
+    </ThemeProvider>
+  );
+}
+
